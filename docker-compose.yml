@@ -1,0 +1,6 @@
+# Deprecated: PostgreSQL/pgvector replaced by local ChromaDB.
+# Kept empty on purpose. Use:
+#   VECTOR_BACKEND=chroma
+#   CHROMA_PATH=./chroma_db
+#   python scripts/ingest_atticus_chroma.py
+services: {}

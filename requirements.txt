@@ -1,0 +1,15 @@
+openai>=1.40.0
+pypdf>=4.3.0
+python-dotenv>=1.0.1
+python-docx>=1.1.2
+streamlit>=1.38.0
+kagglehub>=0.3.0
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.0
+python-multipart>=0.0.9
+chromadb>=0.5.0
+# Optional heavy local models (install when needed):
+# FlagEmbedding>=1.2.10
+# sentence-transformers>=3.0.0
+# torch>=2.2.0

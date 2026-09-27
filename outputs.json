@@ -1,0 +1,670 @@
+{
+  "contract": {
+    "contract_number": "VSA-2026-047",
+    "contract_title": "Vendor Services Agreement",
+    "contract_type": "Vendor Services Agreement",
+    "effective_date": "2026-09-15",
+    "start_date": "2026-10-01",
+    "end_date": "2027-09-30",
+    "status": null
+  },
+  "parties": {
+    "vendor": {
+      "name": "Atlas Digital Solutions SARL",
+      "address": "25 Rue des Oliviers, Oran, Algeria",
+      "registration_number": "16B0987654",
+      "contact": "Karim Mansouri, Managing Director"
+    },
+    "customer": {
+      "name": "Algeria Telecom Services S.p.A.",
+      "address": "12 Avenue des Frères Bouadou, Algiers, Algeria",
+      "registration_number": null,
+      "contact": "Nadia Benali, Director of Procurement"
+    }
+  },
+  "scope": {
+    "description": "Managed IT infrastructure monitoring, technical support, incident management, preventive maintenance and monthly service reporting for the Customer's production infrastructure located in Algiers and Oran.",
+    "products": [],
+    "services": [
+      "Managed IT infrastructure monitoring",
+      "Technical support",
+      "Incident management",
+      "Preventive maintenance",
+      "Monthly service reporting"
+    ],
+    "deliverables": [
+      "Monthly service report",
+      "Customer-specific reports, documentation and deliverables created and paid for under this Agreement"
+    ]
+  },
+  "financial": {
+    "contract_value": "12,000,000 DZD",
+    "currency": "DZD",
+    "taxes": "excluding VAT",
+    "pricing_model": "Fixed annual price",
+    "discounts": [],
+    "additional_fees": []
+  },
+  "payment": {
+    "payment_method": "Bank transfer",
+    "payment_terms": "Pay undisputed invoices within 30 days after receipt of a valid invoice and the corresponding monthly service report.",
+    "payment_due_days": 30,
+    "payment_frequency": "Monthly",
+    "invoice_requirements": [
+      "Invoice submitted at the end of each calendar month",
+      "Corresponding monthly service report"
+    ]
+  },
+  "delivery": {
+    "delivery_terms": null,
+    "delivery_location": null,
+    "delivery_deadlines": [
+      "Monthly service report no later than the fifth business day of the following month",
+      "Planned maintenance affecting production services must be notified at least 5 business days in advance"
+    ],
+    "milestones": []
+  },
+  "sla": {
+    "applicable": true,
+    "availability": "24 hours per day, 7 days per week",
+    "response_time": null,
+    "resolution_time": null,
+    "support_hours": "24x7",
+    "service_credits": [
+      {
+        "type": "Service credit",
+        "trigger": "Failure to meet the Critical incident restoration target",
+        "amount": null,
+        "percentage": "2% of the monthly service fee per incident, capped at 10% of the monthly service fee",
+        "description": "Service credit of 2% of the monthly service fee per incident, capped at 10% of the monthly service fee.",
+        "source_clause": "7"
+      }
+    ]
+  },
+  "obligations": {
+    "vendor": [
+      "Provide managed IT infrastructure monitoring, technical support, incident management, preventive maintenance and monthly service reporting",
+      "Provide all personnel, tools and documentation reasonably required to perform the services",
+      "Submit an invoice at the end of each calendar month",
+      "Provide a monthly service report no later than the fifth business day of the following month",
+      "Notify planned maintenance affecting production services at least 5 business days in advance",
+      "Provide support 24 hours per day, 7 days per week",
+      "Acknowledge Critical incidents within 30 minutes and restore service within 4 hours",
+      "Acknowledge High incidents within 1 hour and restore within 8 hours",
+      "Acknowledge Medium incidents within 4 hours and restore within 2 business days",
+      "Maintain qualified personnel",
+      "Protect Customer systems from unauthorized access",
+      "Maintain accurate service records",
+      "Promptly notify the Customer of material incidents",
+      "Comply with applicable laws",
+      "Maintain the certifications required to perform the services",
+      "Not materially change the assigned technical team without prior notification to the Customer",
+      "Correct, at no additional cost, any material service deficiency caused by its failure to comply with the Agreement",
+      "Keep confidential all non-public technical, commercial, operational and security information received from the Customer",
+      "Process operational and contact information only for the purposes of this Agreement",
+      "Restrict access to authorized personnel",
+      "Notify the Customer of a confirmed personal data breach within 24 hours of becoming aware of it",
+      "At termination, return or securely delete Customer data unless retention is required by law",
+      "Implement access controls, strong authentication, logging, malware protection and encrypted transmission for sensitive information",
+      "Limit administrative access to authorized personnel",
+      "Report security incidents affecting Customer systems without undue delay and no later than 4 hours after confirmation",
+      "Maintain professional liability insurance with minimum coverage of 20,000,000 DZD",
+      "Maintain general liability insurance with minimum coverage of 10,000,000 DZD",
+      "Provide evidence of valid insurance coverage upon request",
+      "Use subcontractors for specialized activities only with the Customer's prior written approval",
+      "Remain fully responsible for the acts and omissions of approved subcontractors",
+      "Ensure subcontractors comply with confidentiality and security obligations equivalent to those imposed on the Vendor",
+      "Provide reasonable transition assistance for up to 30 days at the rates applicable under the Agreement upon termination"
+    ],
+    "customer": [
+      "Pay undisputed invoices within 30 days after receipt of a valid invoice and the corresponding monthly service report",
+      "Provide reasonable access to systems and facilities required for the services",
+      "Designate operational contacts",
+      "Provide information reasonably necessary for incident investigation",
+      "Pay undisputed invoices in accordance with this Agreement",
+      "Raise written objection to monthly service reports within 10 business days after receipt if not accepted",
+      "Provide at least 60 days' written notice of intention not to renew",
+      "Provide prior written approval for subcontractors",
+      "Provide prior written approval for additional fees",
+      "Provide at least 10 business days' prior written notice for audits"
+    ]
+  },
+  "warranty": {
+    "applicable": true,
+    "period": null,
+    "coverage": "Services shall be performed in a professional manner and in accordance with the requirements of this Agreement. Vendor shall correct, at no additional cost, any material service deficiency caused by its failure to comply with the Agreement.",
+    "exclusions": []
+  },
+  "support_and_maintenance": {
+    "support_included": true,
+    "maintenance_included": true,
+    "support_period": "24 hours per day, 7 days per week",
+    "support_channels": []
+  },
+  "intellectual_property": {
+    "ownership": "Each Party retains ownership of intellectual property owned before the Agreement. Customer-specific reports, documentation and deliverables created and paid for under this Agreement shall belong to the Customer. The Vendor retains ownership of its pre-existing tools, methodologies and know-how.",
+    "license": null,
+    "restrictions": []
+  },
+  "confidentiality": {
+    "applicable": true,
+    "duration": "During the Agreement and for five (5) years after termination",
+    "requirements": [
+      "Keep confidential all non-public technical, commercial, operational and security information received from the other Party",
+      "Disclosure permitted when required by applicable law, provided that the disclosing Party gives prior notice where legally permitted"
+    ]
+  },
+  "data_protection": {
+    "personal_data": true,
+    "data_types": [
+      "Operational information",
+      "Contact information"
+    ],
+    "retention_period": null,
+    "data_location": null,
+    "breach_notification": "Notify the Customer of a confirmed personal data breach within 24 hours of becoming aware of it."
+  },
+  "security": {
+    "requirements": [
+      "Implement access controls",
+      "Implement strong authentication",
+      "Implement logging",
+      "Implement malware protection",
+      "Implement encrypted transmission for sensitive information",
+      "Limit administrative access to authorized personnel",
+      "Report security incidents affecting Customer systems without undue delay and no later than 4 hours after confirmation"
+    ],
+    "certifications": [],
+    "audit_requirements": [
+      "Customer may audit the Vendor's compliance with security, SLA and contractual obligations once per year upon at least 10 business days' prior written notice",
+      "Audits may also be conducted following a material security incident or serious contractual breach"
+    ]
+  },
+  "compliance": {
+    "laws": [
+      "Applicable laws"
+    ],
+    "regulations": [],
+    "standards": [],
+    "certifications": []
+  },
+  "insurance": {
+    "required": true,
+    "types": [
+      "Professional liability insurance",
+      "General liability insurance"
+    ],
+    "coverage": "Professional liability insurance with minimum coverage of 20,000,000 DZD and general liability insurance with minimum coverage of 10,000,000 DZD."
+  },
+  "liability": {
+    "liability_cap": "100% of the fees paid or payable during the twelve months preceding the event giving rise to the claim",
+    "currency": "DZD",
+    "excluded_damages": [],
+    "uncapped_liabilities": [
+      "Fraud",
+      "Willful misconduct",
+      "Breach of confidentiality",
+      "Infringement of intellectual property rights",
+      "Liabilities that cannot legally be limited"
+    ]
+  },
+  "penalties": [
+    {
+      "type": "Liquidated damages",
+      "trigger": "Vendor fails to deliver a contractual milestone more than 10 business days after the agreed deadline",
+      "amount": null,
+      "percentage": "0.5% of the affected milestone value per week of delay, capped at 5% of the affected milestone value",
+      "description": "Liquidated damages of 0.5% of the affected milestone value per week of delay, capped at 5% of the affected milestone value.",
+      "source_clause": "20"
+    }
+  ],
+  "force_majeure": {
+    "applicable": true,
+    "events": [
+      "Natural disasters",
+      "War",
+      "Government restrictions",
+      "Widespread telecommunications failures"
+    ],
+    "notification_period": "5 business days"
+  },
+  "subcontracting": {
+    "allowed": true,
+    "approval_required": true,
+    "conditions": [
+      "Only with the Customer's prior written approval",
+      "Vendor remains fully responsible for the acts and omissions of approved subcontractors",
+      "Subcontractors must comply with confidentiality and security obligations equivalent to those imposed on the Vendor"
+    ]
+  },
+  "audit": {
+    "allowed": true,
+    "frequency": "Once per year",
+    "notice_period": "10 business days"
+  },
+  "termination": {
+    "for_convenience": true,
+    "for_cause": true,
+    "notice_period_days": 60,
+    "termination_events": [
+      "Material breach not cured within 30 days after written notice",
+      "Insolvency, liquidation or cessation of business of the other Party"
+    ],
+    "consequences": [
+      "Vendor shall provide reasonable transition assistance for up to 30 days at the rates applicable under the Agreement"
+    ]
+  },
+  "renewal": {
+    "automatic": false,
+    "renewal_period": "12 months",
+    "notice_period_days": 60,
+    "maximum_renewals": null
+  },
+  "dispute_resolution": {
+    "method": "Good-faith negotiation between designated representatives; if unresolved within 30 days, submitted to competent courts of Algiers, Algeria",
+    "jurisdiction": "Algiers, Algeria",
+    "arbitration": null
+  },
+  "governing_law": {
+    "country": "Algeria",
+    "law": "Laws of Algeria"
+  },
+  "important_dates": [
+    {
+      "date": "2026-09-15",
+      "event": "Execution Date",
+      "description": "Contract execution date",
+      "source_clause": "1"
+    },
+    {
+      "date": "2026-10-01",
+      "event": "Commencement Date",
+      "description": "Agreement shall commence",
+      "source_clause": "3"
+    },
+    {
+      "date": "2027-09-30",
+      "event": "End Date",
+      "description": "Agreement shall remain in force until",
+      "source_clause": "3"
+    }
+  ],
+  "actions": [
+    {
+      "action": "Submit monthly service report",
+      "responsible_party": "vendor",
+      "deadline": "5th business day of the following month",
+      "frequency": "monthly",
+      "priority": "medium",
+      "source_clause": "6"
+    },
+    {
+      "action": "Submit invoice",
+      "responsible_party": "vendor",
+      "deadline": "End of each calendar month",
+      "frequency": "monthly",
+      "priority": "medium",
+      "source_clause": "5"
+    },
+    {
+      "action": "Pay undisputed invoices",
+      "responsible_party": "customer",
+      "deadline": "30 days after receipt of valid invoice and monthly service report",
+      "frequency": "monthly",
+      "priority": "high",
+      "source_clause": "5"
+    },
+    {
+      "action": "Notify planned maintenance affecting production services",
+      "responsible_party": "vendor",
+      "deadline": "At least 5 business days in advance",
+      "frequency": null,
+      "priority": "medium",
+      "source_clause": "6"
+    },
+    {
+      "action": "Acknowledge Critical incident",
+      "responsible_party": "vendor",
+      "deadline": "Within 30 minutes",
+      "frequency": null,
+      "priority": "critical",
+      "source_clause": "7"
+    },
+    {
+      "action": "Restore service for Critical incident",
+      "responsible_party": "vendor",
+      "deadline": "Within 4 hours",
+      "frequency": null,
+      "priority": "critical",
+      "source_clause": "7"
+    },
+    {
+      "action": "Acknowledge High incident",
+      "responsible_party": "vendor",
+      "deadline": "Within 1 hour",
+      "frequency": null,
+      "priority": "high",
+      "source_clause": "7"
+    },
+    {
+      "action": "Restore service for High incident",
+      "responsible_party": "vendor",
+      "deadline": "Within 8 hours",
+      "frequency": null,
+      "priority": "high",
+      "source_clause": "7"
+    },
+    {
+      "action": "Acknowledge Medium incident",
+      "responsible_party": "vendor",
+      "deadline": "Within 4 hours",
+      "frequency": null,
+      "priority": "medium",
+      "source_clause": "7"
+    },
+    {
+      "action": "Restore service for Medium incident",
+      "responsible_party": "vendor",
+      "deadline": "Within 2 business days",
+      "frequency": null,
+      "priority": "medium",
+      "source_clause": "7"
+    },
+    {
+      "action": "Notify Customer of confirmed personal data breach",
+      "responsible_party": "vendor",
+      "deadline": "Within 24 hours of becoming aware",
+      "frequency": null,
+      "priority": "critical",
+      "source_clause": "13"
+    },
+    {
+      "action": "Report security incidents affecting Customer systems",
+      "responsible_party": "vendor",
+      "deadline": "Without undue delay and no later than 4 hours after confirmation",
+      "frequency": null,
+      "priority": "critical",
+      "source_clause": "14"
+    },
+    {
+      "action": "Provide evidence of valid insurance coverage",
+      "responsible_party": "vendor",
+      "deadline": "Upon request",
+      "frequency": null,
+      "priority": "medium",
+      "source_clause": "16"
+    },
+    {
+      "action": "Provide at least 60 days' written notice of intention not to renew",
+      "responsible_party": "customer_or_vendor",
+      "deadline": "60 days before renewal date",
+      "frequency": null,
+      "priority": "high",
+      "source_clause": "3"
+    },
+    {
+      "action": "Provide reasonable transition assistance",
+      "responsible_party": "vendor",
+      "deadline": "Up to 30 days after termination",
+      "frequency": null,
+      "priority": "high",
+      "source_clause": "22"
+    },
+    {
+      "action": "Raise written objection to monthly service report",
+      "responsible_party": "customer",
+      "deadline": "Within 10 business days after receipt",
+      "frequency": "monthly",
+      "priority": "medium",
+      "source_clause": "10"
+    },
+    {
+      "action": "Correct rejected reports",
+      "responsible_party": "vendor",
+      "deadline": "Within 5 business days",
+      "frequency": null,
+      "priority": "medium",
+      "source_clause": "10"
+    },
+    {
+      "action": "Notify other Party of force majeure event",
+      "responsible_party": "customer_or_vendor",
+      "deadline": "Within 5 business days",
+      "frequency": null,
+      "priority": "high",
+      "source_clause": "21"
+    },
+    {
+      "action": "Provide prior written approval for subcontractors",
+      "responsible_party": "customer",
+      "deadline": null,
+      "frequency": null,
+      "priority": "medium",
+      "source_clause": "18"
+    },
+    {
+      "action": "Provide prior written approval for additional fees",
+      "responsible_party": "customer",
+      "deadline": null,
+      "frequency": null,
+      "priority": "medium",
+      "source_clause": "4"
+    },
+    {
+      "action": "Provide at least 10 business days' prior written notice for audits",
+      "responsible_party": "customer",
+      "deadline": "10 business days before audit",
+      "frequency": "annual",
+      "priority": "medium",
+      "source_clause": "19"
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Service credit for failure to meet Critical incident restoration target",
+      "severity": "medium",
+      "trigger": "Failure to meet the Critical incident restoration target",
+      "consequence": "Service credit of 2% of the monthly service fee per incident, capped at 10% of the monthly service fee",
+      "source_clause": "7"
+    },
+    {
+      "risk": "Liquidated damages for late milestone delivery",
+      "severity": "medium",
+      "trigger": "Vendor fails to deliver a contractual milestone more than 10 business days after the agreed deadline",
+      "consequence": "Liquidated damages of 0.5% of the affected milestone value per week of delay, capped at 5% of the affected milestone value",
+      "source_clause": "20"
+    },
+    {
+      "risk": "Liability cap may limit recovery",
+      "severity": "medium",
+      "trigger": "Claim under the Agreement",
+      "consequence": "Aggregate liability shall not exceed 100% of the fees paid or payable during the twelve months preceding the event giving rise to the claim",
+      "source_clause": "17"
+    },
+    {
+      "risk": "Uncapped liabilities for certain events",
+      "severity": "high",
+      "trigger": "Fraud, willful misconduct, breach of confidentiality, infringement of intellectual property rights, or liabilities that cannot legally be limited",
+      "consequence": "Unlimited liability",
+      "source_clause": "17"
+    },
+    {
+      "risk": "Termination for convenience by Customer",
+      "severity": "medium",
+      "trigger": "Customer provides 60 days' written notice",
+      "consequence": "Agreement terminated",
+      "source_clause": "22"
+    },
+    {
+      "risk": "Termination for material breach",
+      "severity": "high",
+      "trigger": "Material breach not cured within 30 days after written notice",
+      "consequence": "Agreement terminated",
+      "source_clause": "22"
+    },
+    {
+      "risk": "Immediate termination for insolvency",
+      "severity": "high",
+      "trigger": "Insolvency, liquidation or cessation of business of the other Party",
+      "consequence": "Immediate termination",
+      "source_clause": "22"
+    }
+  ],
+  "missing_information": [
+    "Customer registration number",
+    "Customer tax identification number",
+    "Vendor tax identification number",
+    "SLA response time definition",
+    "SLA resolution time definition",
+    "Warranty period",
+    "Data retention period",
+    "Data location",
+    "Support channels",
+    "Maximum number of renewals",
+    "Delivery terms",
+    "Delivery location",
+    "Milestones",
+    "Discounts",
+    "Additional fees",
+    "Payment invoice requirements details",
+    "Security certifications",
+    "Compliance regulations",
+    "Compliance standards",
+    "Compliance certifications",
+    "Excluded damages",
+    "Arbitration details",
+    "Contract status"
+  ],
+  "sources": [
+    {
+      "clause": "1",
+      "page": 1,
+      "text": "This Vendor Services Agreement (the “Agreement”) is entered into between Algeria Telecom Services S.p.A., 12 Avenue des Frères Bouadou, Algiers, Algeria (“Customer”), and Atlas Digital Solutions SARL, 25 Rue des Oliviers, Oran, Algeria (“Vendor”). The Vendor's registration number is 16B0987654 and its tax identification number is 000016098765432."
+    },
+    {
+      "clause": "2",
+      "page": 1,
+      "text": "The Vendor shall provide managed IT infrastructure monitoring, technical support, incident management, preventive maintenance and monthly service reporting. The services cover the Customer's production infrastructure located in Algiers and Oran. The Vendor shall provide all personnel, tools and documentation reasonably required to perform the services."
+    },
+    {
+      "clause": "3",
+      "page": 1,
+      "text": "The Agreement shall commence on 1 October 2026 and shall remain in force until 30 September 2027. The Agreement may be renewed for additional periods of twelve (12) months by mutual written agreement. Either Party must provide at least 60 days' written notice of its intention not to renew."
+    },
+    {
+      "clause": "4",
+      "page": 1,
+      "text": "The annual contract value is 12,000,000 DZD excluding VAT. Prices are fixed during the initial term. Any price adjustment for a renewal period must be agreed in writing by both Parties before the renewal begins. No additional fees may be charged without the Customer's prior written approval."
+    },
+    {
+      "clause": "5",
+      "page": 1,
+      "text": "The Vendor shall submit an invoice at the end of each calendar month. The Customer shall pay undisputed invoices within 30 days after receipt of a valid invoice and the corresponding monthly service report. Payments shall be made by bank transfer in Algerian dinars. The Customer may withhold amounts reasonably disputed until the dispute is resolved."
+    },
+    {
+      "clause": "6",
+      "page": 1,
+      "text": "The Vendor shall provide a monthly service report no later than the fifth business day of the following month. The report shall include incidents, response and resolution times, preventive maintenance performed, outstanding actions and SLA performance. Any planned maintenance affecting production services must be notified at least 5 business days in advance."
+    },
+    {
+      "clause": "7",
+      "page": 1,
+      "text": "The Vendor shall provide support 24 hours per day, 7 days per week. For a Critical incident, the Vendor must acknowledge the incident within 30 minutes and restore service within 4 hours. For a High incident, acknowledgement shall occur within 1 hour and restoration within 8 hours. For a Medium incident, acknowledgement shall occur within 4 hours and restoration within 2 business days. Failure to meet the Critical incident restoration target may result in a service credit of 2% of the monthly service fee per incident, capped at 10% of the monthly service fee."
+    },
+    {
+      "clause": "8",
+      "page": 1,
+      "text": "The Vendor shall maintain qualified personnel, protect Customer systems from unauthorized access, maintain accurate service records, promptly notify the Customer of material incidents, comply with applicable laws and maintain the certifications required to perform the services. The Vendor shall not materially change the assigned technical team without prior notification to the Customer."
+    },
+    {
+      "clause": "9",
+      "page": 2,
+      "text": "The Customer shall provide reasonable access to systems and facilities required for the services, designate operational contacts, provide information reasonably necessary for incident investigation and pay undisputed invoices in accordance with this Agreement."
+    },
+    {
+      "clause": "10",
+      "page": 2,
+      "text": "Monthly service reports shall be deemed accepted if the Customer does not raise a written objection within 10 business days after receipt. Rejected reports must be corrected by the Vendor within 5 business days."
+    },
+    {
+      "clause": "11",
+      "page": 2,
+      "text": "The Vendor warrants that the services shall be performed in a professional manner and in accordance with the requirements of this Agreement. The Vendor shall correct, at no additional cost, any material service deficiency caused by its failure to comply with the Agreement."
+    },
+    {
+      "clause": "12",
+      "page": 2,
+      "text": "Each Party shall keep confidential all non-public technical, commercial, operational and security information received from the other Party. Confidentiality obligations shall remain in force during the Agreement and for five (5) years after termination. Disclosure is permitted when required by applicable law, provided that the disclosing Party gives prior notice where legally permitted."
+    },
+    {
+      "clause": "13",
+      "page": 2,
+      "text": "The Vendor may process operational and contact information necessary to provide the services. The Vendor shall use such information only for the purposes of this Agreement, restrict access to authorized personnel, and notify the Customer of a confirmed personal data breach within 24 hours of becoming aware of it. At termination, the Vendor shall return or securely delete Customer data unless retention is required by law."
+    },
+    {
+      "clause": "14",
+      "page": 2,
+      "text": "The Vendor shall implement access controls, strong authentication, logging, malware protection and encrypted transmission for sensitive information. Administrative access shall be limited to authorized personnel. Security incidents affecting Customer systems shall be reported without undue delay and no later than 4 hours after confirmation."
+    },
+    {
+      "clause": "15",
+      "page": 2,
+      "text": "Each Party retains ownership of intellectual property owned before the Agreement. Customer-specific reports, documentation and deliverables created and paid for under this Agreement shall belong to the Customer. The Vendor retains ownership of its pre-existing tools, methodologies and know-how."
+    },
+    {
+      "clause": "16",
+      "page": 2,
+      "text": "During the term, the Vendor shall maintain professional liability insurance with minimum coverage of 20,000,000 DZD and general liability insurance with minimum coverage of 10,000,000 DZD. Upon request, the Vendor shall provide evidence of valid insurance coverage."
+    },
+    {
+      "clause": "17",
+      "page": 2,
+      "text": "Except for fraud, willful misconduct, breach of confidentiality, infringement of intellectual property rights, and liabilities that cannot legally be limited, each Party's aggregate liability under the Agreement shall not exceed 100% of the fees paid or payable during the twelve months preceding the event giving rise to the claim."
+    },
+    {
+      "clause": "18",
+      "page": 2,
+      "text": "The Vendor may use subcontractors for specialized activities only with the Customer's prior written approval. The Vendor remains fully responsible for the acts and omissions of approved subcontractors. Subcontractors must comply with confidentiality and security obligations equivalent to those imposed on the Vendor."
+    },
+    {
+      "clause": "19",
+      "page": 3,
+      "text": "The Customer may audit the Vendor's compliance with security, SLA and contractual obligations once per year upon at least 10 business days' prior written notice. Audits may also be conducted following a material security incident or serious contractual breach."
+    },
+    {
+      "clause": "20",
+      "page": 3,
+      "text": "If the Vendor fails to deliver a contractual milestone more than 10 business days after the agreed deadline, the Customer may apply liquidated damages of 0.5% of the affected milestone value per week of delay, capped at 5% of the affected milestone value."
+    },
+    {
+      "clause": "21",
+      "page": 3,
+      "text": "Neither Party shall be liable for failure caused by events beyond its reasonable control, including natural disasters, war, government restrictions and widespread telecommunications failures. The affected Party shall notify the other Party within 5 business days and take reasonable measures to mitigate the effects."
+    },
+    {
+      "clause": "22",
+      "page": 3,
+      "text": "Either Party may terminate the Agreement for material breach if the breach is not cured within 30 days after written notice. The Customer may terminate the Agreement for convenience with 60 days' written notice. Either Party may terminate immediately in the event of insolvency, liquidation or cessation of business of the other Party. Upon termination, the Vendor shall provide reasonable transition assistance for up to 30 days at the rates applicable under the Agreement."
+    },
+    {
+      "clause": "23",
+      "page": 3,
+      "text": "The Parties shall first attempt to resolve disputes through good-faith negotiation between their designated representatives. If unresolved within 30 days, the dispute shall be submitted to the competent courts of Algiers, Algeria. This Agreement shall be governed by the laws of Algeria."
+    },
+    {
+      "clause": "24",
+      "page": 3,
+      "text": "Formal notices shall be made in writing and delivered by registered mail or official email to the addresses designated by each Party. Notices by email shall be deemed received on the next business day unless a delivery failure notice is received."
+    },
+    {
+      "clause": "25",
+      "page": 3,
+      "text": "In case of conflict, the following order of precedence shall apply: (1) this Agreement, (2) signed amendments, (3) Statements of Work, (4) technical specifications, and (5) purchase orders."
+    },
+    {
+      "clause": "26",
+      "page": 3,
+      "text": "For the Customer: Algeria Telecom Services S.p.A. — Authorized Representative: Nadia Benali, Director of Procurement. For the Vendor: Atlas Digital Solutions SARL — Authorized Representative: Karim Mansouri, Managing Director. Signature date: 15 September 2026."
+    }
+  ]
+}

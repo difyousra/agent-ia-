@@ -4,22 +4,39 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from .config import AgentConfig
+from .context.builder import build_routed_context, sources_from_payloads
 from .ingest import extract_contract_text
 from .llm import LLMClient
 from .normalize import extract_json_payload, normalize_list_items, normalize_result
-from .prompts import RAG_SYSTEM_PROMPT, RAG_USER_PROMPT_TEMPLATE, SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
+from .prompts import (
+    INTELLIGENCE_SYSTEM_PROMPT,
+    INTELLIGENCE_USER_PROMPT_TEMPLATE,
+    SYSTEM_PROMPT,
+    USER_PROMPT_TEMPLATE,
+)
 from .rag.pipeline import RAGPipeline
-from .rag.schemas import ContractQueryResponse, FactWithSource, RetrievalDebug, SourceRef
+from .router import Route, RoutingDecision, classify_route
+from .schemas.response import AgentQueryResponse, RoutingDebug, TraceableSource
+from .tools import contract_search, legal_search, no_retrieval
 
 logger = logging.getLogger(__name__)
 
 
 class VendorContractAgent:
-    """Agent unique d'analyse de contrat fournisseur (optionnellement augmenté par RAG)."""
+    """Single agent: full-contract analysis + routed Q&A (RAG / legal / both / none)."""
 
-    def __init__(self, llm: LLMClient | None = None, rag: RAGPipeline | None = None) -> None:
+    def __init__(
+        self,
+        llm: LLMClient | None = None,
+        rag: RAGPipeline | None = None,
+        config: AgentConfig | None = None,
+        legal_provider=None,
+    ) -> None:
+        self.config = config or AgentConfig.from_env()
         self.llm = llm or LLMClient()
         self.rag = rag
+        self.legal_provider = legal_provider
 
     def analyze_file(self, path: str | Path) -> dict[str, Any]:
         contract_text = extract_contract_text(path)
@@ -41,146 +58,211 @@ class VendorContractAgent:
         query: str,
         *,
         contract_id: str | None = None,
-        debug: bool = False,
+        jurisdiction: str | None = None,
+        debug: bool | None = None,
         top_k: int | None = None,
         top_n: int | None = None,
-    ) -> ContractQueryResponse:
-        """Question answering via hybrid RAG + existing LLM agent."""
-        if not query or not str(query).strip():
-            return ContractQueryResponse(
+    ) -> AgentQueryResponse:
+        """Route the question, call only required tools, then produce structured JSON."""
+        text = (query or "").strip()
+        debug_mode = self.config.debug_agent_routing if debug is None else bool(debug)
+        jur = (jurisdiction or self.config.default_jurisdiction or "DZ").upper()
+        k = top_n or top_k or 5
+
+        if not text:
+            return AgentQueryResponse(
                 answer=None,
+                route=Route.NO_RETRIEVAL.value,
                 insufficient_information=True,
                 confidence=0.0,
-                facts=[],
-                actions=[],
-                risks=[],
-                sources=[],
+                missing_information=["Empty query"],
             )
 
-        pipeline = self.rag or RAGPipeline()
+        decision = classify_route(text, config=self.config, llm=self.llm)
+        contract_payload: dict[str, Any] | None = None
+        legal_payload: dict[str, Any] | None = None
+
         try:
-            retrieval = pipeline.retrieve(
-                query.strip(),
-                contract_id=contract_id,
-                top_k=top_k,
-                top_n=top_n,
-            )
-        except ValueError as exc:
-            logger.warning("RAG retrieval validation error: %s", exc)
-            return ContractQueryResponse(
-                answer=None,
-                insufficient_information=True,
-                confidence=0.0,
-                facts=[],
-                actions=[],
-                risks=[],
-                sources=[],
-                analysis={"error": str(exc)},
-            )
+            if decision.route == Route.CONTRACT_ONLY:
+                contract_payload = contract_search(
+                    text,
+                    contract_id=contract_id,
+                    top_k=k,
+                    rag=self.rag,
+                )
+            elif decision.route == Route.LEGAL_ONLY:
+                legal_payload = legal_search(
+                    text,
+                    jurisdiction=jur,
+                    top_k=k,
+                    config=self.config,
+                    provider=self.legal_provider,
+                )
+            elif decision.route == Route.CONTRACT_AND_LEGAL:
+                contract_payload = contract_search(
+                    text,
+                    contract_id=contract_id,
+                    top_k=k,
+                    rag=self.rag,
+                )
+                legal_payload = legal_search(
+                    text,
+                    jurisdiction=jur,
+                    top_k=k,
+                    config=self.config,
+                    provider=self.legal_provider,
+                )
+            else:
+                no_retrieval()
         except Exception as exc:
-            logger.exception("RAG retrieval failed")
-            return ContractQueryResponse(
-                answer=None,
-                insufficient_information=True,
-                confidence=0.0,
-                facts=[],
-                actions=[],
-                risks=[],
-                sources=[],
-                analysis={"error": f"retrieval_unavailable: {exc}"},
+            logger.exception("Tool execution failed")
+            return _error_response(
+                decision,
+                missing=[f"Tool execution failed: {exc}"],
+                debug_mode=debug_mode,
             )
 
-        if retrieval["insufficient_information"]:
-            response = ContractQueryResponse(
-                answer=None,
-                insufficient_information=True,
-                confidence=0.0,
-                facts=[],
-                actions=[],
-                risks=[],
-                sources=retrieval["sources"],
+        # Graceful degradation when retrieval backends fail
+        contract_ok = contract_payload is None or contract_payload.get("available", True)
+        legal_ok = legal_payload is None or legal_payload.get("available", True)
+
+        if decision.route == Route.CONTRACT_ONLY and not contract_ok:
+            return _error_response(
+                decision,
+                missing=[contract_payload.get("error") if contract_payload else "contract_rag_unavailable"],
+                debug_mode=debug_mode,
+                answer="Insufficient information.",
             )
-            if debug:
-                response.debug = RetrievalDebug(
-                    semantic_results=retrieval["semantic_results"],
-                    keyword_results=retrieval["keyword_results"],
-                    rrf_results=retrieval["rrf_results"],
-                    reranked_results=retrieval["reranked_results"],
-                )
-            return response
+
+        if decision.route == Route.LEGAL_ONLY and not legal_ok:
+            return _error_response(
+                decision,
+                missing=[legal_payload.get("error") if legal_payload else "legal_api_unavailable"],
+                debug_mode=debug_mode,
+                answer="Insufficient information.",
+            )
+
+        if decision.route == Route.CONTRACT_AND_LEGAL and not contract_ok and not legal_ok:
+            return _error_response(
+                decision,
+                missing=["Required retrieval sources are unavailable."],
+                debug_mode=debug_mode,
+                answer="Insufficient information.",
+            )
+
+        context = build_routed_context(
+            contract_payload=contract_payload,
+            legal_payload=legal_payload,
+        )
+        if decision.route == Route.NO_RETRIEVAL:
+            context = (
+                "NO RETRIEVAL SELECTED.\n"
+                "Answer with general knowledge only. "
+                "Do not invent contract clauses, legal citations, or URLs."
+            )
+
+        fallback_sources = sources_from_payloads(
+            contract_payload=contract_payload,
+            legal_payload=legal_payload,
+        )
+        missing_retrieval: list[str] = []
+        if decision.route == Route.CONTRACT_AND_LEGAL and not legal_ok:
+            missing_retrieval.append(
+                f"Legal verification unavailable: {(legal_payload or {}).get('error')}"
+            )
+        if decision.route == Route.CONTRACT_AND_LEGAL and not contract_ok:
+            missing_retrieval.append(
+                f"Contract retrieval unavailable: {(contract_payload or {}).get('error')}"
+            )
 
         user_prompt = (
-            RAG_USER_PROMPT_TEMPLATE.replace("<<<USER_QUERY>>>", query.strip()).replace(
-                "<<<RETRIEVED_CONTEXT>>>",
-                retrieval["context"],
-            )
+            INTELLIGENCE_USER_PROMPT_TEMPLATE.replace("<<<USER_QUERY>>>", text)
+            .replace("<<<ROUTE>>>", decision.route.value)
+            .replace("<<<RETRIEVED_CONTEXT>>>", context)
         )
         try:
-            raw = self.llm.complete(RAG_SYSTEM_PROMPT, user_prompt)
+            raw = self.llm.complete(INTELLIGENCE_SYSTEM_PROMPT, user_prompt)
             parsed = extract_json_payload(raw)
         except Exception as exc:
             logger.exception("LLM JSON generation failed")
-            return ContractQueryResponse(
-                answer=None,
-                insufficient_information=True,
-                confidence=0.0,
-                facts=[],
-                actions=[],
-                risks=[],
-                sources=retrieval["sources"],
-                analysis={"error": f"invalid_llm_json: {exc}"},
-                debug=RetrievalDebug(
-                    semantic_results=retrieval["semantic_results"],
-                    keyword_results=retrieval["keyword_results"],
-                    rrf_results=retrieval["rrf_results"],
-                    reranked_results=retrieval["reranked_results"],
-                )
-                if debug
-                else None,
+            return _error_response(
+                decision,
+                missing=[f"invalid_llm_json: {exc}"],
+                sources=fallback_sources,
+                debug_mode=debug_mode,
             )
 
-        response = _parse_rag_response(parsed, retrieval["sources"])
-        if debug:
-            response.debug = RetrievalDebug(
-                semantic_results=retrieval["semantic_results"],
-                keyword_results=retrieval["keyword_results"],
-                rrf_results=retrieval["rrf_results"],
-                reranked_results=retrieval["reranked_results"],
-            )
+        response = _parse_intelligence_response(
+            parsed,
+            decision=decision,
+            fallback_sources=fallback_sources,
+            extra_missing=missing_retrieval,
+        )
+        if debug_mode:
+            response.debug = RoutingDebug(**decision.to_debug_dict())
+            response.route = decision.route.value
+        elif response.route is None:
+            # Always expose final route in the structured output (not chain-of-thought)
+            response.route = decision.route.value
         return response
 
 
-def _parse_rag_response(parsed: dict[str, Any], fallback_sources: list[SourceRef]) -> ContractQueryResponse:
-    facts_raw = parsed.get("facts") or []
-    facts: list[FactWithSource] = []
-    for item in facts_raw:
-        if not isinstance(item, dict):
-            continue
-        source = item.get("source") if isinstance(item.get("source"), dict) else {}
-        fact_text = item.get("fact")
-        if not fact_text:
-            continue
-        facts.append(
-            FactWithSource(
-                fact=str(fact_text),
-                source=SourceRef(
-                    document_name=source.get("document_name"),
-                    contract_id=source.get("contract_id"),
-                    clause_number=source.get("clause_number"),
-                    clause_type=source.get("clause_type"),
-                    page=source.get("page"),
-                    text=source.get("text"),
-                ),
-            )
-        )
+def _error_response(
+    decision: RoutingDecision,
+    *,
+    missing: list[Any],
+    debug_mode: bool,
+    answer: str | None = None,
+    sources: list[dict[str, Any]] | None = None,
+) -> AgentQueryResponse:
+    response = AgentQueryResponse(
+        answer=answer or "Insufficient information.",
+        route=decision.route.value,
+        missing_information=[str(m) for m in missing if m],
+        sources=[TraceableSource(**s) for s in (sources or []) if isinstance(s, dict)],
+        insufficient_information=True,
+        confidence=0.0,
+    )
+    if debug_mode:
+        response.debug = RoutingDebug(**decision.to_debug_dict())
+    return response
 
-    sources_raw = parsed.get("sources") or []
-    sources: list[SourceRef] = []
+
+def _parse_intelligence_response(
+    parsed: dict[str, Any],
+    *,
+    decision: RoutingDecision,
+    fallback_sources: list[dict[str, Any]],
+    extra_missing: list[str],
+) -> AgentQueryResponse:
+    def _as_list(value: Any) -> list[Any]:
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return value
+        return [value]
+
+    sources_raw = _as_list(parsed.get("sources"))
+    sources: list[TraceableSource] = []
     for item in sources_raw:
         if isinstance(item, dict):
-            sources.append(SourceRef(**{k: item.get(k) for k in SourceRef.model_fields}))
+            # Map legacy RAG source keys if the model returns them
+            mapped = {
+                "source_type": item.get("source_type"),
+                "document": item.get("document") or item.get("document_name"),
+                "contract_id": item.get("contract_id"),
+                "clause": item.get("clause") or item.get("clause_number"),
+                "page": item.get("page"),
+                "title": item.get("title"),
+                "reference": item.get("reference"),
+                "jurisdiction": item.get("jurisdiction"),
+                "date": item.get("date"),
+                "url": item.get("url"),
+                "text": item.get("text"),
+            }
+            sources.append(TraceableSource(**mapped))
     if not sources:
-        sources = fallback_sources
+        sources = [TraceableSource(**s) for s in fallback_sources]
 
     confidence = parsed.get("confidence")
     try:
@@ -188,29 +270,42 @@ def _parse_rag_response(parsed: dict[str, Any], fallback_sources: list[SourceRef
     except (TypeError, ValueError):
         confidence_value = None
 
+    answer = parsed.get("answer")
+    if answer is not None and not isinstance(answer, str):
+        answer = str(answer)
+
+    missing = [str(x) for x in _as_list(parsed.get("missing_information"))]
+    for item in extra_missing:
+        if item and item not in missing:
+            missing.append(item)
+
+    contract_facts = _as_list(parsed.get("contract_facts"))
+    # Backward-compatible "facts" mirror for older UI
+    facts = contract_facts or _as_list(parsed.get("facts"))
+
+    route = parsed.get("route") or decision.route.value
+    if isinstance(route, str):
+        route = route.strip().upper()
+
     analysis = parsed.get("analysis")
     if isinstance(analysis, str):
         analysis = {"note": analysis}
     elif analysis is not None and not isinstance(analysis, dict):
         analysis = {"value": analysis}
 
-    actions = parsed.get("actions") or []
-    if not isinstance(actions, list):
-        actions = []
-    actions = [item if isinstance(item, dict) else {"action": str(item)} for item in actions]
-
-    risks = parsed.get("risks") or []
-    if not isinstance(risks, list):
-        risks = []
-    risks = [item if isinstance(item, dict) else {"risk": str(item)} for item in risks]
-
-    return ContractQueryResponse(
-        answer=parsed.get("answer") if parsed.get("answer") is None or isinstance(parsed.get("answer"), str) else str(parsed.get("answer")),
-        facts=facts,
-        actions=actions,
-        risks=risks,
+    return AgentQueryResponse(
+        answer=answer,
+        route=route,
+        contract_facts=contract_facts,
+        legal_facts=_as_list(parsed.get("legal_facts")),
+        comparison=_as_list(parsed.get("comparison")),
+        obligations=_as_list(parsed.get("obligations")),
+        actions=_as_list(parsed.get("actions")),
+        risks=_as_list(parsed.get("risks")),
+        missing_information=missing,
         sources=sources,
         confidence=confidence_value,
-        analysis=analysis,
         insufficient_information=bool(parsed.get("insufficient_information")),
+        analysis=analysis,
+        facts=facts,
     )

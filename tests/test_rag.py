@@ -301,8 +301,9 @@ def test_end_to_end_question_answering(rag_stack, monkeypatch):
     for question in questions:
         response = agent.answer_query(question, contract_id="CTR-001", debug=True)
         assert response.debug is not None
+        assert response.route == "CONTRACT_ONLY"
+        assert response.debug.tools_used == ["contract_search"]
         assert response.answer or response.insufficient_information is False or response.facts
-        assert response.debug.rrf_results is not None
 
 
 def test_empty_query_does_not_crash(rag_stack):

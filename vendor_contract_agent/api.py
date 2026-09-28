@@ -11,13 +11,14 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from .agent import VendorContractAgent
+from .config import AgentConfig
 from .rag.config import RAGConfig
 from .rag.db import create_store
 from .rag.embeddings import EmbeddingService
 from .rag.ingestion import DocumentIngestionPipeline
 from .rag.pipeline import RAGPipeline
 from .rag.rerank import RerankerService
-from .rag.schemas import ContractQueryRequest, ContractQueryResponse
+from .schemas.response import AgentQueryRequest, AgentQueryResponse
 
 load_dotenv(override=True)
 
@@ -41,17 +42,18 @@ def create_app() -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         config = RAGConfig.from_env()
-        # Prefer memory when explicitly requested; otherwise try PostgreSQL.
+        agent_config = AgentConfig.from_env()
         force_memory = config.database_url.startswith("memory://")
         store = create_store(config, force_memory=force_memory)
         embedder = EmbeddingService(config)
         reranker = RerankerService(config)
         rag = RAGPipeline(store=store, embedder=embedder, reranker=reranker, config=config)
-        agent = VendorContractAgent(rag=rag)
+        agent = VendorContractAgent(rag=rag, config=agent_config)
         ingestion = DocumentIngestionPipeline(store=store, embedder=embedder, config=config)
         state.update(
             {
                 "config": config,
+                "agent_config": agent_config,
                 "store": store,
                 "agent": agent,
                 "ingestion": ingestion,
@@ -65,22 +67,25 @@ def create_app() -> FastAPI:
             close()
 
     app = FastAPI(
-        title="Vendor Contract Analysis Agent API",
-        version="1.1.0",
+        title="Vendor Contract Intelligence Agent API",
+        version="1.2.0",
         lifespan=lifespan,
     )
 
     @app.get("/health")
     def health() -> dict[str, Any]:
         store = state["store"]
+        agent_config: AgentConfig = state["agent_config"]
         return {
             "status": "ok",
             "store": type(store).__name__,
             "chunks": store.count(),
+            "legal_search_enabled": agent_config.legal_search_enabled,
+            "default_jurisdiction": agent_config.default_jurisdiction,
         }
 
-    @app.post("/api/contracts/query", response_model=ContractQueryResponse)
-    def query_contracts(payload: ContractQueryRequest) -> ContractQueryResponse:
+    @app.post("/api/contracts/query", response_model=AgentQueryResponse)
+    def query_contracts(payload: AgentQueryRequest) -> AgentQueryResponse:
         query = (payload.query or "").strip()
         if not query:
             raise HTTPException(status_code=400, detail="Empty query")
@@ -89,16 +94,18 @@ def create_app() -> FastAPI:
             return agent.answer_query(
                 query,
                 contract_id=payload.contract_id,
+                jurisdiction=payload.jurisdiction,
                 debug=payload.debug,
                 top_k=payload.top_k,
                 top_n=payload.top_n,
             )
         except Exception as exc:
             logger.exception("query failed")
-            return ContractQueryResponse(
+            return AgentQueryResponse(
                 answer=None,
                 insufficient_information=True,
                 confidence=0.0,
+                missing_information=[str(exc)],
                 analysis={"error": str(exc)},
             )
 

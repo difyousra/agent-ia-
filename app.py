@@ -183,7 +183,7 @@ if mode.startswith("Question"):
             placeholder="ACCELERATEDTECHNOLOGIESHOLDINGCORP_...",
         )
     with col_b:
-        debug = st.checkbox("Debug retrieval", value=False)
+        debug = st.checkbox("Debug routing", value=False)
     with col_c:
         ask = st.button("Envoyer le prompt", type="primary", use_container_width=True)
 
@@ -212,13 +212,17 @@ if mode.startswith("Question"):
         st.markdown("### Réponse")
         st.write(rag_response.get("answer") or "—")
 
-        m1, m2, m3 = st.columns(3)
-        m1.metric(
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Route", rag_response.get("route") or "—")
+        m2.metric(
             "Confidence",
             rag_response.get("confidence") if rag_response.get("confidence") is not None else "—",
         )
-        m2.metric("Facts", _metric_count(rag_response.get("facts")))
-        m3.metric("Sources", _metric_count(rag_response.get("sources")))
+        m3.metric(
+            "Facts",
+            _metric_count(rag_response.get("contract_facts") or rag_response.get("facts")),
+        )
+        m4.metric("Sources", _metric_count(rag_response.get("sources")))
 
         tabs = st.tabs(["PDF sources", "Facts", "Actions", "Risques", "Sources", "Debug", "JSON"])
 
@@ -226,13 +230,20 @@ if mode.startswith("Question"):
             sources = rag_response.get("sources") or []
             pdf_options: list[str] = []
             for src in sources:
-                name = src.get("document_name") or src.get("contract_id")
+                name = src.get("document") or src.get("document_name") or src.get("contract_id")
                 if name and name not in pdf_options:
                     pdf_options.append(name)
             # Also collect from facts
-            for item in rag_response.get("facts") or []:
-                src = item.get("source") or {}
-                name = src.get("document_name") or src.get("contract_id")
+            for item in rag_response.get("contract_facts") or rag_response.get("facts") or []:
+                if isinstance(item, dict):
+                    src = item.get("source") or item
+                else:
+                    src = {}
+                name = (
+                    (src.get("document") if isinstance(src, dict) else None)
+                    or (src.get("document_name") if isinstance(src, dict) else None)
+                    or (src.get("contract_id") if isinstance(src, dict) else None)
+                )
                 if name and name not in pdf_options:
                     pdf_options.append(name)
 
@@ -253,21 +264,24 @@ if mode.startswith("Question"):
                     st.warning("Ce PDF n'a pas été trouvé dans le dataset Atticus local.")
 
         with tabs[1]:
-            facts = rag_response.get("facts") or []
+            facts = rag_response.get("contract_facts") or rag_response.get("facts") or []
             if not facts:
                 st.write("Aucun fact extrait.")
             else:
                 for item in facts:
+                    if isinstance(item, str):
+                        st.markdown(f"**{item}**")
+                        continue
                     source = item.get("source") or {}
-                    st.markdown(f"**{item.get('fact')}**")
+                    st.markdown(f"**{item.get('fact') or item}**")
                     st.caption(
-                        f"{source.get('document_name')} | "
+                        f"{source.get('document') or source.get('document_name')} | "
                         f"{source.get('clause_type')} | "
-                        f"clause {source.get('clause_number')} | "
+                        f"clause {source.get('clause') or source.get('clause_number')} | "
                         f"page {source.get('page')}"
                     )
                     if source.get("text"):
-                        st.code(source.get("text"), language=None)
+                        st.code(source["text"][:500], language=None)
 
         with tabs[2]:
             st.dataframe(rag_response.get("actions") or [], use_container_width=True)
@@ -278,14 +292,8 @@ if mode.startswith("Question"):
         with tabs[5]:
             debug_payload = rag_response.get("debug")
             if not debug_payload:
-                st.info("Cochez Debug retrieval puis renvoyez le prompt.")
+                st.info("Cochez Debug routing puis renvoyez le prompt.")
             else:
-                st.write(
-                    f"semantic={len(debug_payload.get('semantic_results') or [])} | "
-                    f"keyword={len(debug_payload.get('keyword_results') or [])} | "
-                    f"rrf={len(debug_payload.get('rrf_results') or [])} | "
-                    f"rerank={len(debug_payload.get('reranked_results') or [])}"
-                )
                 st.json(debug_payload)
         with tabs[6]:
             st.json(rag_response)

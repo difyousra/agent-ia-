@@ -1,22 +1,23 @@
-# Vendor Contract Analysis Agent + Chroma RAG
+# Vendor Contract Intelligence Agent + Chroma RAG
 
-Single-agent vendor contract analysis with a **ChromaDB** hybrid RAG layer.  
-The **Atticus Open Contract Dataset (AOK)** is ingested as the full knowledge base.
+Single-agent vendor contract analysis with **intelligent routing** and a **ChromaDB** hybrid RAG layer.  
+The **Atticus Open Contract Dataset (AOK)** is ingested as the contract knowledge base.
 
 ## Architecture
 
 ```
-User Query
-  → Semantic Search (BGE-M3 embeddings in Chroma)
-  → Keyword Search (lexical / contains over Chroma docs)
-  → Reciprocal Rank Fusion (RRF)
-  → Reranker (BGE-reranker-v2-m3)
-  → Context Builder + citations
-  → Existing Vendor Contract Agent
-  → Validated JSON
+User Question
+  → Single Agent
+  → Route: CONTRACT_ONLY | LEGAL_ONLY | CONTRACT_AND_LEGAL | NO_RETRIEVAL
+  → Tools (only when needed):
+       contract_search (Chroma + BGE-M3 + hybrid/RRF + BGE-reranker)
+       legal_search   (external Legal API adapter)
+       no_retrieval
+  → Separated context [INTERNAL CONTRACT] / [EXTERNAL LEGAL]
+  → LLM → structured JSON
 ```
 
-Vector backend: **ChromaDB** (persistent local directory `./chroma_db`).
+Vector backend: **ChromaDB** only (no PostgreSQL / pgvector).
 
 ## Installation
 
